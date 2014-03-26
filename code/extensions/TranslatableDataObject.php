@@ -50,7 +50,7 @@ class TranslatableDataObject extends DataExtension
 	 */
 	public function updateCMSFields(FieldList $fields) {
 		parent::updateCMSFields($fields);
-		
+		/*
 		// remove all localized fields from the list (generated through scaffolding)
 		foreach (self::$collectorCache[$this->owner->class] as $translatableField => $type) {
 			$fields->removeByName($translatableField);
@@ -71,6 +71,7 @@ class TranslatableDataObject extends DataExtension
 				}
 			} 
 		}
+		*/
 	}
 	
 	/**
@@ -132,29 +133,33 @@ class TranslatableDataObject extends DataExtension
 	 * @param string $locale
 	 * @return FormField
 	 */
-	public function getLocalizedFormField($fieldName, $locale){
+	public function getLocalizedFormField($fieldName, $locale, $fieldtype = null){
 		$baseName = $this->getBasename($fieldName);
 		$localizedFieldName = self::localized_field($fieldName, $locale);
-		
 		$dbFields = array();
 		Config::inst()->get($this->owner->class, 'db', Config::EXCLUDE_EXTRA_SOURCES, $dbFields);
-		
-		$type = isset($dbFields[$baseName]) ? $dbFields[$baseName] : '';
-		$typeClean = (($p = strpos($type, '(')) !== false) ? substr($type, 0, $p) : $type;
 		$field = null;
-		
-		switch ($typeClean) {
-			case 'Varchar':
-			case 'HTMLVarchar':
-				$field = new TextField($localizedFieldName, $baseName);
-				break;
-			case 'Text':
-				$field = new TextareaField($localizedFieldName, $baseName);
-				break;
-			case 'HTMLText':
-			default:
-				$field = new HtmlEditorField($localizedFieldName, $baseName);
-				break;
+		if($fieldtype == null){
+			$type = isset($dbFields[$baseName]) ? $dbFields[$baseName] : '';
+			$typeClean = (($p = strpos($type, '(')) !== false) ? substr($type, 0, $p) : $type;
+			switch ($typeClean) {
+				case 'Varchar':
+				case 'HTMLVarchar':
+					$field = new TextField($localizedFieldName, $baseName);
+					break;
+				case 'Text':
+					$field = new TextareaField($localizedFieldName, $baseName);
+					break;
+				case 'Boolean':
+					$field = new CheckboxField($localizedFieldName, $baseName);
+					break;
+				case 'HTMLText':
+				default:
+					$field = new HtmlEditorField($localizedFieldName, $baseName);
+					break;
+			}
+		}else{
+			$field = $fieldtype::create($localizedFieldName, $baseName);
 		}
 		return $field;
 	}
