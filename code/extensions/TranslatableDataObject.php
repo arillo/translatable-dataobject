@@ -271,9 +271,9 @@ class TranslatableDataObject extends DataExtension
 		if(!$locale){
 			$locale = Translatable::get_current_locale();
 		}
-		if($locale == Translatable::default_locale()){
-			return $field;
-		}
+		// if($locale == Translatable::default_locale()){
+		// 	return $field;
+		// }
 		return $field . TRANSLATABLE_COLUMN_SEPARATOR . $locale;
 	}
 	
@@ -370,9 +370,9 @@ class TranslatableDataObject extends DataExtension
 		$locales = self::get_target_locales();
 	
 		// remove the default locale
-		if(($index = array_search(Translatable::default_locale(), $locales)) !== false) {
-			array_splice($locales, $index, 1);
-		}
+		// if(($index = array_search(Translatable::default_locale(), $locales)) !== false) {
+		// 	array_splice($locales, $index, 1);
+		// }
 	
 		// fields that should be translated
 		$fieldsToTranslate = array();
