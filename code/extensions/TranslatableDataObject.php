@@ -50,28 +50,6 @@ class TranslatableDataObject extends DataExtension
 	 */
 	public function updateCMSFields(FieldList $fields) {
 		parent::updateCMSFields($fields);
-		/*
-		// remove all localized fields from the list (generated through scaffolding)
-		foreach (self::$collectorCache[$this->owner->class] as $translatableField => $type) {
-			$fields->removeByName($translatableField);
-		}
-		
-		// check if we're in a translation
-		if (Translatable::default_locale() != Translatable::get_current_locale()) {
-			$transformation = new TranslatableFormFieldTransformation($this->owner);
-
-			// iterate through all localized fields
-			foreach (self::$collectorCache[$this->owner->class] as $translatableField => $type) {
-				
-				if (strpos($translatableField, Translatable::get_current_locale())) {
-					$basename = $this->getBasename($translatableField);
-					
-					$field = $this->getLocalizedFormField($basename, Translatable::default_locale());
-					$fields->replaceField($basename, $transformation->transformFormField($field));
-				}
-			} 
-		}
-		*/
 	}
 	
 	/**
@@ -271,9 +249,6 @@ class TranslatableDataObject extends DataExtension
 		if(!$locale){
 			$locale = Translatable::get_current_locale();
 		}
-		if($locale == Translatable::default_locale()){
-			return $field;
-		}
 		return $field . TRANSLATABLE_COLUMN_SEPARATOR . $locale;
 	}
 	
@@ -368,11 +343,6 @@ class TranslatableDataObject extends DataExtension
 		$arguments = self::get_arguments($class);
 	
 		$locales = self::get_target_locales();
-	
-		// remove the default locale
-		if(($index = array_search(Translatable::default_locale(), $locales)) !== false) {
-			array_splice($locales, $index, 1);
-		}
 	
 		// fields that should be translated
 		$fieldsToTranslate = array();
